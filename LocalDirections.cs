@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LocalDirections : MonoBehaviour
+public class LocalDirections
 {
     public Transform trans;
 
