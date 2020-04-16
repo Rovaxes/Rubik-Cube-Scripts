@@ -11,10 +11,16 @@ public class RotateOnAxis : MonoBehaviour
     public bool isRotating = false;
     public Transform Rubik;
     public Rubik rubik;
+
+    public Vector3 axisPlane; //Used to determine rotate direction
+
     // Start is called before the first frame update
     void Start()
     {
         rubik = GetComponentInParent<Rubik>();
+        LocalDirections ld = new LocalDirections(this.transform);
+        axisPlane = ld.N + ld.E;
+
     }
 
     // Update is called once per frame
@@ -56,13 +62,13 @@ public class RotateOnAxis : MonoBehaviour
     }
 
     
-    public void RotateAxis() { 
+    public void RotateAxis(float amt) { 
         //Vector3 newRotation = this.transform.rotation.eulerAngles + new Vector3(0, 0, 90f);
         //this.transform.rotation = Quaternion.Euler(newRotation);
         if (!isRotating)
         {
             isRotating = true;
-            StartCoroutine(Rotate(new Vector3(0, 0, 1), 90, 1.0f));
+            StartCoroutine(Rotate(new Vector3(0, 0, 1), amt, 1.0f));
         }
     }
 
