@@ -17,10 +17,7 @@ public class RotateOnAxis : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rubik = GetComponentInParent<Rubik>();
-        LocalDirections ld = new LocalDirections(this.transform);
-        axisPlane = ld.N + ld.E;
-
+        rubik = GetComponentInParent<Rubik>(); 
     }
 
     // Update is called once per frame
@@ -38,8 +35,49 @@ public class RotateOnAxis : MonoBehaviour
 
         //When touched then initiate lock
         //this.transform.rotation = Quaternion.Euler(rotation);
+        axisPlane = AxisPlane();
     }
 
+    public Vector3 AxisPlane() {
+        LocalDirections ld = new LocalDirections(this.transform);
+        axisPlane = ld.N + ld.E;
+        axisPlane.x = Mathf.Abs(axisPlane.x);
+        axisPlane.y = Mathf.Abs(axisPlane.y);
+        axisPlane.z = Mathf.Abs(axisPlane.z);
+        return axisPlane;
+    }
+
+    public bool InPlane(Vector3 line) {
+
+        Vector3 ap = AxisPlane();
+        Debug.Log("Line: " + line + " Plane: " + ap);
+        if (line.x > 0.1) {
+            if (ap.x > 0.1) {
+                return true;
+            }
+        }
+
+        if (line.y > 0.1)
+        {
+            if (ap.y > 0.1)
+            {
+                return true;
+            }
+        }
+
+        if (line.z > 0.1)
+        {
+            if (ap.z > 0.1)
+            {
+                return true;
+            }
+        }
+
+
+        return false;
+        
+
+    }
     void LockCubes() {
         foreach (GameObject cube in cubes) {
             cube.transform.SetParent(this.gameObject.transform);
