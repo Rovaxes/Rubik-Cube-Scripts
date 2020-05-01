@@ -9,22 +9,23 @@ public class Cube : MonoBehaviour
     public List<RotateOnAxis> RotatatableAxis;
     public bool rotate;
     public float dragThreshold = 10f;
-    // Start is called before the first frame update
-    void Start()
+
+    public Button[] Buttons;
+
+    public void Start()
     {
-        
+        Buttons = this.GetComponentsInChildren<Button>();
+        UpdateCube();
     }
 
-    /*
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        //LocalDirections ld = new LocalDirections(this.transform);      
-        if (rotate) {
-            RotatatableAxis[0].RotateAxis();
-        }
-    }*/
+    public void UpdateCube() {       
 
+        foreach (Button b in Buttons) {
+            b.UpdateButton();
+        }
+
+        RotatatableAxis.Clear();
+    }
 
     public void ClearAxis() {
         RotatatableAxis.Clear();

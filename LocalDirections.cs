@@ -18,6 +18,8 @@ public class LocalDirections
     public Vector3[] AllDirections(){
         return new Vector3[]{ N, NE, E, SE, S, SW, W, NW }; } 
 
+    
+
     public LocalDirections(Transform t) {
         trans = t;
     }

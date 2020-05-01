@@ -7,20 +7,28 @@ public class Button : MonoBehaviour
     public List<RotateOnAxis> RotatableAxis;
     private Cube cube;
     public float dragThreshold = 10f;
+    public bool u;
+    
     // Start is called before the first frame update
     void Start()
     {
         cube = GetComponentInParent<Cube>();
+        UpdateButton();
     }
 
     // Update is called once per frame
     void Update()
     {
-        RotatableAxis = cube.RotatatableAxis.FindAll(x => x.InPlane(VectorAbs(this.transform.forward)));
-        
+        //RotatableAxis = cube.RotatatableAxis.FindAll(x => x.InPlane(VectorAbs(this.transform.forward)));
+        if (u) {
+            UpdateButton();
+        }
         Debug.DrawRay(this.transform.position, this.transform.forward, Color.blue);
     }
 
+    public void UpdateButton() {
+        RotatableAxis = cube.RotatatableAxis.FindAll(x => x.InPlane(VectorAbs(this.transform.forward)));
+    }
 
     Vector3 initialMP;
     Vector3 finalMP;
@@ -46,13 +54,21 @@ public class Button : MonoBehaviour
         {
             Debug.Log("Hor");
             float xDir = Mathf.Sign(direction.x);
-            xRoa.RotateAxis(xDir * 90);
+            Vector3 RotateDir = new Vector3(xDir * 90, 0);
+            if (xRoa.rubik.canRotateAxis)
+            {
+                xRoa.RotateAxis(xDir * 90);
+            }
         }
         else if (yMag > dragThreshold && yMag > xMag)
         {
             Debug.Log("Ver");
             float yDir = Mathf.Sign(direction.y);
-            yRoa.RotateAxis(yDir * 90);
+            Vector3 RotateDir = new Vector3(0, yDir * 90);
+            if (yRoa.rubik.canRotateAxis)
+            {
+                yRoa.RotateAxis(yDir * 90);
+            }
         }
         else {
             //Do nothing message

@@ -6,6 +6,7 @@ public class RotateOnAxis : MonoBehaviour
 {
 
     public List<GameObject> cubes;
+    public List<GameObject> rotatingCubes;
     public Vector3 rotation;
     public bool isLocked = true;
     public bool isRotating = false;
@@ -33,9 +34,7 @@ public class RotateOnAxis : MonoBehaviour
         Debug.DrawRay(ld.trans.position, ld.W * 20, Color.yellow);
         Debug.DrawRay(ld.trans.position, ld.NW * 20, Color.yellow);
 
-        //When touched then initiate lock
-        //this.transform.rotation = Quaternion.Euler(rotation);
-        axisPlane = AxisPlane();
+        //Debug.Log("Transform: " + transform.forward);
     }
 
     public Vector3 AxisPlane() {
@@ -50,7 +49,7 @@ public class RotateOnAxis : MonoBehaviour
     public bool InPlane(Vector3 line) {
 
         Vector3 ap = AxisPlane();
-        Debug.Log("Line: " + line + " Plane: " + ap);
+        //Debug.Log("Line: " + line + " Plane: " + ap);
         if (line.x > 0.1) {
             if (ap.x > 0.1) {
                 return true;
@@ -81,13 +80,10 @@ public class RotateOnAxis : MonoBehaviour
     void LockCubes() {
         foreach (GameObject cube in cubes) {
             cube.transform.SetParent(this.gameObject.transform);
-
-            Cube c;
-            if (cube.TryGetComponent<Cube>(out c)) {
-                c.ClearAxis();
-            }
         }
         isLocked = true;
+        rubik.canRotateAxis = false;
+        rubik.canUpdate = false;
     }
 
     void UnlockCubes() {
@@ -96,23 +92,34 @@ public class RotateOnAxis : MonoBehaviour
         }
         /* Need to Clear Cubes That are Rotatable Otherwise they get caught by other axis*/
         isLocked = false;
-        rubik.UpdateAllAxis();
+        rubik.canUpdate = true;
     }
 
     
-    public void RotateAxis(float amt) { 
-        //Vector3 newRotation = this.transform.rotation.eulerAngles + new Vector3(0, 0, 90f);
-        //this.transform.rotation = Quaternion.Euler(newRotation);
+    public void RotateAxis(float amt) {
         if (!isRotating)
         {
             isRotating = true;
-            StartCoroutine(Rotate(new Vector3(0, 0, 1), amt, 1.0f));
+
+            /*Take care if the axis is flipped */
+            
+            if (Vector3.Dot(transform.forward, Vector3.right) > 0 || Vector3.Dot(transform.forward, Vector3.up) < 0)
+            {
+                StartCoroutine(Rotate(Vector3.forward, amt, 0.5f));
+            }
+            else {
+                StartCoroutine(Rotate(Vector3.forward, -amt, 0.5f));
+            }
         }
     }
 
     public void UpdateAxis() {
         Debug.Log("Updating Axis");
+
+        axisPlane = AxisPlane();
+
         cubes.Clear();
+
         RaycastHit hit;
         LocalDirections ld = new LocalDirections(this.transform);
         foreach (Vector3 dir in ld.AllDirections())
@@ -158,10 +165,12 @@ public class RotateOnAxis : MonoBehaviour
             yield return null;
             
         }
-        
+        Debug.Log("Done Rotating");
         transform.rotation = to;
         UnlockCubes();
         isRotating = false;
+        rubik.canRotateAxis = true;
+        //rubik.UpdateRubiks();
     }
 
 }
